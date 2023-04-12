@@ -1,0 +1,28 @@
+version: "3"
+services:
+
+  postgres-application:
+    image: postgres
+    container_name: categories
+    restart: always
+    environment:
+      POSTGRES_DB: categories
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    env_file:
+      - .env
+  
+  # application:
+  #   build: ../TestTaskCategories
+  #   ports:
+  #     - "8080:8080"
+  #   depends_on:
+  #     - postgres-application
+  #   restart: unless-stopped
+
+volumes:
+  pgdata:
