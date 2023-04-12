@@ -5,11 +5,6 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-export enum CategoryActiveType {
-  ON = 'вкл',
-  OFF = 'выкл',
-}
-
 @Entity()
 export class Category {
   @PrimaryGeneratedColumn('uuid')
@@ -33,9 +28,6 @@ export class Category {
   })
   createdDate: Date;
 
-  @Column({
-    type: 'enum',
-    enum: CategoryActiveType,
-  })
+  @Column()
   active: boolean;
 }
