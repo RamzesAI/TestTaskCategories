@@ -15,22 +15,17 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Controller('category')
 export class CategoryController {
-  constructor(private readonly categoryService: CategoryService) {}
+  constructor(private readonly categoryService: CategoryService) { }
 
-  @UsePipes(ValidationPipe)
   @Post('create')
   create(@Body() dto: CreateCategoryDto) {
     return this.categoryService.create(dto);
   }
 
-  @Get('get-all')
-  findAll() {
-    return this.categoryService.findAll();
-  }
-
-  @Get('get-by-id/:id')
+  @Get('')
   findById(@Param('id') id: string) {
-    return this.categoryService.findById(id);
+    // return this.categoryService.findById(id);
+    return 'PIZDA'
   }
 
   @Get('get-by-slug/:slug')

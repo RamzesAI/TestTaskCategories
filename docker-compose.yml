@@ -1,28 +1,54 @@
-version: "3"
-services:
+version: '3.9'
 
-  postgres-application:
-    image: postgres
-    container_name: categories
+services:
+  categories_db_service:
+    container_name: ${PG_SRV_CONT_NAME}
+    image: postgres:12
+    env_file:
+      - ./.env.${APP_ENV}
+    environment:
+      PGDATA: ${PG_SRV_VLM_CONT_PATH}
+      POSTGRES_DB: categories
+    volumes:
+      - ./development/${PG_SRV_VLM_HOST_PATH}:/${PG_SRV_VLM_CONT_PATH}
+    ports:
+      - "${PG_SRV_HOST_PORT}:${PG_SRV_CONT_PORT}"
+    networks:
+      - categories-network
+    restart: unless-stopped
+
+  categories_api:
+    container_name: ${API_SRV_CONT_NAME}
+    image: ${API_SRV_IMG_NAME}
+    depends_on:
+      - categories_db_service
+    build:
+      context: .
+      dockerfile: ./${APP_ENV}.dockerfile
+    command: sh -c "npx typeorm -d ./dist/db/data-source.js migration:run && npm run start:dev"
+    env_file:
+      - ./.env.${APP_ENV}
+    ports:
+      - ${API_SRV_HOST_PORT}:${API_SRV_CONT_PORT}
+    volumes:
+      - ./:/usr/src/app
+    networks:
+      - categories-network
+    restart: unless-stopped
+
+  pgadmin:
+    container_name: pgadmin4_container
+    image: dpage/pgadmin4
     restart: always
     environment:
-      POSTGRES_DB: categories
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
     ports:
-      - 5432:5432
+      - "5050:80"
     volumes:
-      - pgdata:/var/lib/postgresql/data
-    env_file:
-      - .env
-  
-  # application:
-  #   build: ../TestTaskCategories
-  #   ports:
-  #     - "8080:8080"
-  #   depends_on:
-  #     - postgres-application
-  #   restart: unless-stopped
+      - ./development/pgadmin:/var/lib/pgadmin
+    networks:
+      - categories-network
 
-volumes:
-  pgdata:
+networks:
+  categories-network:
