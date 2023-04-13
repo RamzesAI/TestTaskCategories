@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
+import { GetValueParams, GetFilterParams } from './category.controller';
 
 @Injectable()
 export class CategoryService {
@@ -15,15 +16,35 @@ export class CategoryService {
     return this.repository.save(dto);
   }
 
-  async findById(id: string) {
-    const category = await this.repository.findOneBy({ id });
-    if (!category) {
-      throw new HttpException(
-        'такой категории не существует',
-        HttpStatus.BAD_REQUEST,
-      );
+  async findByValue(value: GetValueParams) {
+    if (value.id) {
+      const category = await this.repository.findOneBy(value);
+      if (!category) {
+        throw new HttpException(
+          'такой категории не существует',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      return category;
     }
-    return category;
+
+    if (value.slug) {
+      const category = await this.repository.findOneBy(value);
+      if (!category) {
+        throw new HttpException(
+          'такой категории не существует',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      return category;
+    }
+    throw new HttpException('неверный формат данных', HttpStatus.NOT_FOUND);
+  }
+
+  async findByFilter() {
+    // const categoryField = Object.keys(value)[0];
+    // const category = await this.repository.findBy({});
+    return;
   }
 
   async findBySlug(slug: string) {
@@ -59,6 +80,10 @@ export class CategoryService {
   }
 
   findAll() {
-    return this.repository.find();
+    return this.repository
+      .createQueryBuilder('category')
+      .orderBy('category.createdDate', 'DESC')
+      .limit(2)
+      .getMany();
   }
 }
