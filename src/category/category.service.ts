@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { GetValueParams, GetFilterParams } from './category.controller';
+import { GetValueParams } from './category.controller';
 
 @Injectable()
 export class CategoryService {
@@ -41,10 +41,31 @@ export class CategoryService {
     throw new HttpException('неверный формат данных', HttpStatus.NOT_FOUND);
   }
 
-  async findByFilter() {
-    // const categoryField = Object.keys(value)[0];
-    // const category = await this.repository.findBy({});
-    return;
+  async findByFilter(searchParams) {
+    const { name, description, active, search, page, pageSize, sort } =
+      searchParams;
+    const numberOfOrders = pageSize ? pageSize : 2;
+
+    console.log(active, typeof active);
+
+    if (search) {
+      return search;
+    } else {
+      return (
+        this.repository
+          .createQueryBuilder('category')
+          // .where('category.name ilike :name', { name: `%${name}%` })
+          .where('category.name ilike :name', { name })
+          .andWhere('category.active = :active', { active })
+          // // .orWhere('category.description = :description', {
+          //   description: description,
+          // })
+          .limit(numberOfOrders)
+          .getMany()
+      );
+    }
+
+    return searchParams;
   }
 
   async findBySlug(slug: string) {
@@ -79,11 +100,11 @@ export class CategoryService {
     return 'категория удалена';
   }
 
-  findAll() {
-    return this.repository
-      .createQueryBuilder('category')
-      .orderBy('category.createdDate', 'DESC')
-      .limit(2)
-      .getMany();
-  }
+  // findAll() {
+  //   return this.repository
+  //     .createQueryBuilder('category')
+  //     .orderBy('category.createdDate', 'DESC')
+  //     .limit(2)
+  //     .getMany();
+  // }
 }
