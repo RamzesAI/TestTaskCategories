@@ -7,7 +7,7 @@ WORKDIR /usr/src/app
 COPY package.json ./
 COPY package-lock.json ./
 
-RUN npm install --dev
+RUN npm ci --include=dev
 
 RUN npm i -g @nestjs/cli rimraf
 

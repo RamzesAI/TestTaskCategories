@@ -28,7 +28,7 @@ export interface GetFilterParams {
 
 @Controller('category')
 export class CategoryController {
-  constructor(private readonly categoryService: CategoryService) { }
+  constructor(private readonly categoryService: CategoryService) {}
 
   @UsePipes(ValidationPipe)
   @Post() // create category

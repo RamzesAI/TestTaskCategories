@@ -45,24 +45,31 @@ export class CategoryService {
     const { name, description, active, search, page, pageSize, sort } =
       searchParams;
     const numberOfOrders = pageSize ? pageSize : 2;
-
-    console.log(active, typeof active);
+    const pageNumber = page === 0 ? 1 : page;
+    const startOfView = page * pageSize - (pageSize - 1) - 1;
+    const modifiedName = name.replace('е', '[е|ё]');
+    const modifiedDescription = description.replace('е', '[е|ё]');
+    console.log(modifiedDescription);
 
     if (search) {
       return search;
-    } else {
-      return (
-        this.repository
-          .createQueryBuilder('category')
-          // .where('category.name ilike :name', { name: `%${name}%` })
-          .where('category.name ilike :name', { name })
-          .andWhere('category.active = :active', { active })
-          // // .orWhere('category.description = :description', {
-          //   description: description,
-          // })
-          .limit(numberOfOrders)
-          .getMany()
-      );
+    }
+    if (name || description) {
+      return this.repository
+        .createQueryBuilder('category')
+        .where('lower (category.name) similar to lower (:name)', {
+          name: `%${modifiedName}%`,
+        })
+        .orWhere(
+          'lower (category.description) similar to lower (:description)',
+          {
+            description: `%${modifiedDescription}%`,
+          },
+        )
+        .andWhere('category.active = :active', { active })
+        .limit(numberOfOrders)
+        .offset(startOfView)
+        .getMany();
     }
 
     return searchParams;
