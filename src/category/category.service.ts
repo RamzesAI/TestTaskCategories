@@ -1,7 +1,6 @@
 import { Category } from './entities/category.entity';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { CreateCategoryRequestDto } from './dto/create-category.dto';
 import { UpdateCategoryRequestDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GetCategoryByIdOrSlug } from './dto/get-category-by.dto';
@@ -12,8 +11,8 @@ export class CategoryService {
     @InjectRepository(Category)
     private repository: Repository<Category>, // ToDo: rename repo
   ) {}
-  create(dto: CreateCategoryRequestDto) {
-    return this.repository.save(dto);
+  create(createCategoryDto: Category): Promise<Category> {
+    return this.repository.save(createCategoryDto);
   }
 
   async getCategoryByIdOrSlug(value: GetCategoryByIdOrSlug): Promise<Category> {
