@@ -9,9 +9,8 @@ COPY package-lock.json ./
 
 RUN npm install --dev
 
-RUN npm i -g @nestjs/cli rimraf
+RUN npm i -g @nestjs/cli rimraf env-cmd
 
 COPY . .
 
 RUN npm run build
-

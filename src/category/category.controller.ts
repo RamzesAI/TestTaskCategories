@@ -9,11 +9,11 @@ import {
   Query,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
-import { CreateCategoryRequestDto } from './dto/create-category.dto';
 import { UpdateCategoryRequestDto } from './dto/update-category.dto';
 import { QueryParams } from './dto/aboba';
 import { GetCategoryByIdOrSlug } from './dto/get-category-by.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Category } from './entities/category.entity';
 
 export interface GetFilterParams {
   name?: string;
@@ -26,21 +26,26 @@ export interface GetFilterParams {
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
+  @ApiOperation({ summary: 'Get categories by filter' })
   @Get() // get all categories
   findByFilter(@Query() query: QueryParams) {
     return this.categoryService.findByFilter(query);
   }
 
-  @Get('/by') // get category by id or slug // <---------------
+  @ApiOperation({ summary: 'Get category by id or slug' })
+  @Get('/by')
   getCategoryByIdOrSlug(@Query() queryParams: GetCategoryByIdOrSlug) {
     return this.categoryService.getCategoryByIdOrSlug(queryParams);
   }
 
+  @ApiResponse({ type: Category })
+  @ApiOperation({ summary: 'Create new category' })
   @Post() // create category
-  createCategory(@Body() createCategoryDto: CreateCategoryRequestDto) {
+  createCategory(@Body() createCategoryDto: Category) {
     return this.categoryService.create(createCategoryDto);
   }
 
+  @ApiOperation({ summary: 'Update category by id' })
   @Patch('/:id')
   update(
     @Param('id') id: string,
@@ -49,6 +54,7 @@ export class CategoryController {
     return this.categoryService.update(id, updateCategoryDto);
   }
 
+  @ApiOperation({ summary: 'Delete category by id' })
   @Delete('/:id')
   remove(@Param('id') id: string) {
     return this.categoryService.remove(id);
