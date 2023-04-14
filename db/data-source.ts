@@ -3,10 +3,10 @@ import { DataSource, DataSourceOptions } from 'typeorm';
 
 export const dataSourceOptions: DataSourceOptions = {
   type: 'postgres',
-  host: 'localhost',
+  host: 'categories_db_service',
   port: 5432,
-  username: 'user',
-  password: 'password',
+  username: 'postgres',
+  password: 'postgres',
   database: 'categories',
   entities: [Category],
   migrations: ['dist/db/migrations/*.*'],
