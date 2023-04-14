@@ -11,21 +11,21 @@ export class CategoryService {
   constructor(
     @InjectRepository(Category)
     private repository: Repository<Category>, // ToDo: rename repo
-  ) { }
+  ) {}
   create(dto: CreateCategoryRequestDto) {
     return this.repository.save(dto);
   }
 
-  async findByValue(value: GetCategoryByIdOrSlug) { // ToDo: refactoring
-    let category = {} as Category
+  async getCategoryByIdOrSlug(value: GetCategoryByIdOrSlug): Promise<Category> {
+    // ToDo: refactoring
+    let category = {} as Category;
     if (value.id) {
       category = await this.repository.findOneBy(value);
     } else if (value.slug) {
       category = await this.repository.findOneBy(value);
     }
-    return category
+    return category;
   }
-
 
   async findByFilter(searchParams) {
     const { name, description, active, search, page, pageSize, sort } =

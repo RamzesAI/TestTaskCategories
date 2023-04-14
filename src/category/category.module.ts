@@ -8,6 +8,5 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   imports: [TypeOrmModule.forFeature([Category])],
   controllers: [CategoryController],
   providers: [CategoryService],
-  exports: [CategoryService],
 })
 export class CategoryModule {}

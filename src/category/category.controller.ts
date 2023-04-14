@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  UsePipes,
   Query,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
@@ -15,7 +14,6 @@ import { UpdateCategoryRequestDto } from './dto/update-category.dto';
 import { QueryParams } from './dto/aboba';
 import { GetCategoryByIdOrSlug } from './dto/get-category-by.dto';
 import { ApiTags } from '@nestjs/swagger';
-
 
 export interface GetFilterParams {
   name?: string;
@@ -26,21 +24,21 @@ export interface GetFilterParams {
 @ApiTags('Categories')
 @Controller('category')
 export class CategoryController {
-  constructor(private readonly categoryService: CategoryService) { }
+  constructor(private readonly categoryService: CategoryService) {}
 
   @Get() // get all categories
   findByFilter(@Query() query: QueryParams) {
     return this.categoryService.findByFilter(query);
   }
 
-  @Get('/by') // get category by id or slug // <--------------- 
+  @Get('/by') // get category by id or slug // <---------------
   getCategoryByIdOrSlug(@Query() queryParams: GetCategoryByIdOrSlug) {
-    return this.categoryService.findByValue(queryParams);
+    return this.categoryService.getCategoryByIdOrSlug(queryParams);
   }
 
   @Post() // create category
-  create(@Body() dto: CreateCategoryRequestDto) {
-    return this.categoryService.create(dto);
+  createCategory(@Body() createCategoryDto: CreateCategoryRequestDto) {
+    return this.categoryService.create(createCategoryDto);
   }
 
   @Patch('/:id')
