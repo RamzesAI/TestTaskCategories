@@ -1,4 +1,3 @@
-import { ValidationPipe } from './../pipes/validation.pipe';
 import {
   Controller,
   Get,
@@ -11,14 +10,12 @@ import {
   Query,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
-import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
+import { CreateCategoryRequestDto } from './dto/create-category.dto';
+import { UpdateCategoryRequestDto } from './dto/update-category.dto';
 import { QueryParams } from './dto/aboba';
+import { GetCategoryByIdOrSlug } from './dto/get-category-by.dto';
+import { ApiTags } from '@nestjs/swagger';
 
-export interface GetValueParams {
-  id?: string;
-  slug?: string;
-}
 
 export interface GetFilterParams {
   name?: string;
@@ -26,30 +23,30 @@ export interface GetFilterParams {
   active?: boolean | string;
 }
 
+@ApiTags('Categories')
 @Controller('category')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) { }
 
-  @UsePipes(ValidationPipe)
-  @Post() // create category
-  create(@Body() dto: CreateCategoryDto) {
-    return this.categoryService.create(dto);
-  }
-
-  @Get('/all') // get all categories
+  @Get() // get all categories
   findByFilter(@Query() query: QueryParams) {
     return this.categoryService.findByFilter(query);
   }
 
-  @Get() // get category by id or slug
-  findByValue(@Query() value: GetValueParams) {
-    return this.categoryService.findByValue(value);
+  @Get('/by') // get category by id or slug // <--------------- 
+  getCategoryByIdOrSlug(@Query() queryParams: GetCategoryByIdOrSlug) {
+    return this.categoryService.findByValue(queryParams);
+  }
+
+  @Post() // create category
+  create(@Body() dto: CreateCategoryRequestDto) {
+    return this.categoryService.create(dto);
   }
 
   @Patch('/:id')
   update(
     @Param('id') id: string,
-    @Body() updateCategoryDto: UpdateCategoryDto,
+    @Body() updateCategoryDto: UpdateCategoryRequestDto,
   ) {
     return this.categoryService.update(id, updateCategoryDto);
   }

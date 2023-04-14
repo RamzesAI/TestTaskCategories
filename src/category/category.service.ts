@@ -1,45 +1,31 @@
 import { Category } from './entities/category.entity';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
+import { CreateCategoryRequestDto } from './dto/create-category.dto';
+import { UpdateCategoryRequestDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { GetValueParams } from './category.controller';
+import { GetCategoryByIdOrSlug } from './dto/get-category-by.dto';
 
 @Injectable()
 export class CategoryService {
   constructor(
     @InjectRepository(Category)
-    private repository: Repository<Category>,
-  ) {}
-  create(dto: CreateCategoryDto) {
+    private repository: Repository<Category>, // ToDo: rename repo
+  ) { }
+  create(dto: CreateCategoryRequestDto) {
     return this.repository.save(dto);
   }
 
-  async findByValue(value: GetValueParams) {
+  async findByValue(value: GetCategoryByIdOrSlug) { // ToDo: refactoring
+    let category = {} as Category
     if (value.id) {
-      const category = await this.repository.findOneBy(value);
-      if (!category) {
-        throw new HttpException(
-          'такой категории не существует',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-      return category;
+      category = await this.repository.findOneBy(value);
+    } else if (value.slug) {
+      category = await this.repository.findOneBy(value);
     }
-
-    if (value.slug) {
-      const category = await this.repository.findOneBy(value);
-      if (!category) {
-        throw new HttpException(
-          'такой категории не существует',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-      return category;
-    }
-    throw new HttpException('неверный формат данных', HttpStatus.NOT_FOUND);
+    return category
   }
+
 
   async findByFilter(searchParams) {
     const { name, description, active, search, page, pageSize, sort } =
@@ -79,7 +65,7 @@ export class CategoryService {
     return category;
   }
 
-  async update(id: string, updateCategoryDto: UpdateCategoryDto) {
+  async update(id: string, updateCategoryDto: UpdateCategoryRequestDto) {
     const category = await this.repository.findOneBy({ id });
     if (!category) {
       throw new HttpException(

@@ -1,6 +1,6 @@
 import { IsBoolean, IsString } from 'class-validator';
 
-export class CreateCategoryDto {
+export class CreateCategoryRequestDto {
   @IsString({ message: 'значение должно быть строкой' })
   slug: string;
 
@@ -15,3 +15,5 @@ export class CreateCategoryDto {
   @IsBoolean({ message: 'значение должно быть логическим' })
   active: boolean;
 }
+
+export class CreateCategoryResponseDto { }
